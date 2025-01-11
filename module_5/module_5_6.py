@@ -2,7 +2,7 @@ from time import sleep
 
 class UrTube:
     users = {}
-    videos = []
+    videos = {}
     current_user = None
 
     def log_in(self, nickname, password):
@@ -24,28 +24,31 @@ class UrTube:
             if not isinstance(video, Video):
                 continue
             if video not in self.videos:
-                self.videos.append(video)
+                self.videos[video.title] = video
 
     def get_videos(self, find_string):
         find_videos = []
-        for video in self.videos:
-            if str(find_string).lower() in str(video.title).lower():
-                find_videos.append(video.title)
+        for title, video in self.videos.items():
+            if str(find_string).lower() in str(title).lower():
+                find_videos.append(title)
         return find_videos
 
     def watch_video(self, title):
+        if not title in dict.keys(self.videos):
+            return
+
+        video = self.videos[title]
+
         if not self.current_user:
             print("Войдите в аккаунт, чтобы смотреть видео")
-
-        elif self.users[self.current_user] < 18:
+        elif video.adult_mode and getattr(self.users[self.current_user], "age") < 18:
             print("Вам нет 18 лет, пожалуйста покиньте страницу")
         else:
-            for video in self.videos:
-                if video.title == title:
-                    for t in range(1, video.duration + 1):
-                        print(t, end=" ")
-                        sleep(1)
-                    print("Конец видео")
+            while video.time_now <= video.duration:
+                video.time_now += 1
+                print(video.time_now, end=" ")
+                sleep(1)
+            print("Конец видео")
 
 class Video:
     def __init__(self, title, duration, time_now=0, adult_mode=False):
