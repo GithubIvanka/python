@@ -37,14 +37,15 @@ class UrTube:
         if not title in dict.keys(self.videos):
             return
 
-        video = self.videos[title]
-
         if not self.current_user:
             print("Войдите в аккаунт, чтобы смотреть видео")
-        elif video.adult_mode and getattr(self.users[self.current_user], "age") < 18:
+            return
+
+        video = self.videos[title]
+        if video.adult_mode and getattr(self.users[self.current_user], "age") < 18:
             print("Вам нет 18 лет, пожалуйста покиньте страницу")
         else:
-            while video.time_now <= video.duration:
+            while video.time_now < video.duration:
                 video.time_now += 1
                 print(video.time_now, end=" ")
                 sleep(1)
