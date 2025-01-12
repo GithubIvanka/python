@@ -44,12 +44,15 @@ class UrTube:
         video = self.videos[title]
         if video.adult_mode and getattr(self.users[self.current_user], "age") < 18:
             print("Вам нет 18 лет, пожалуйста покиньте страницу")
+            return
+
+        for t in range(1, video.duration + 1):
+            video.time_now = t
+            print(video.time_now, end=" ")
+            sleep(1)
         else:
-            while video.time_now < video.duration:
-                video.time_now += 1
-                print(video.time_now, end=" ")
-                sleep(1)
             print("Конец видео")
+            video.time_now = 0
 
 class Video:
     def __init__(self, title, duration, time_now=0, adult_mode=False):
